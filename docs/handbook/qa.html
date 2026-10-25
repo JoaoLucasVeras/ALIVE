@@ -1,0 +1,58 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>ALIVE handbook browser checks</title>
+<h1>Handbook integration checks</h1><pre id="results">RUNNING</pre><iframe id="site" title="Handbook under test" style="width:1200px;height:900px" src="dist/index.html"></iframe>
+<script>
+(async () => {
+  const frame = document.getElementById('site');
+  const report = document.getElementById('results');
+  const checks = [];
+  const wait = () => new Promise(resolve => setTimeout(resolve, 30));
+  const check = (condition, name) => { if (!condition) throw Error(name); checks.push(name); };
+  try {
+    if (!frame.contentWindow.ALIVE_MARKDOWN) await new Promise(resolve => frame.addEventListener('load',resolve,{once:true}));
+    let w = frame.contentWindow, d = frame.contentDocument;
+    const sectionCount = w.ALIVE_HANDBOOK.sections.length;
+    const taskItems = w.ALIVE_HANDBOOK.sections.find(s=>s.id==='work').blocks.find(b=>b.type==='tasks').items;
+    check(d.querySelectorAll('nav a').length === sectionCount, 'All section links render');
+    for (const section of w.ALIVE_HANDBOOK.sections) {
+      w.location.hash = section.id; await wait();
+      check(d.querySelector('h1').textContent === section.title, `Route ${section.id}`);
+      check(d.querySelector('nav [aria-current="page"]').hash === '#' + section.id, `Active link ${section.id}`);
+    }
+    const input = d.getElementById('search');
+    input.value = 'sharing'; input.dispatchEvent(new w.Event('input'));
+    check(d.querySelectorAll('.search-result').length > 1, 'Search covers multiple sections');
+    d.querySelector('.search-result').click(); await wait();
+    check(input.value === '' && !!d.querySelector('.page-title'), 'Search result opens section and clears query');
+    input.value = 'zzz-no-match-987'; input.dispatchEvent(new w.Event('input'));
+    check(!!d.querySelector('.empty'), 'Empty search has helpful feedback');
+    d.querySelector('nav a[href="#work"]').click(); await wait();
+    check(d.querySelectorAll('.task').length === taskItems.length, 'All task records render');
+    d.querySelector('[data-priority="P0"]').click();
+    check([...d.querySelectorAll('.task')].filter(t=>!t.hidden).length === taskItems.filter(t=>t.priority==='P0').length, 'P0 filter shows the correct task count');
+    d.querySelector('[data-priority="All"]').click();
+    check([...d.querySelectorAll('.task')].every(t=>!t.hidden), 'All filter restores tasks');
+    const markdown = w.ALIVE_MARKDOWN();
+    check(w.ALIVE_HANDBOOK.sections.every(s=>markdown.includes('## ' + s.title)), 'Markdown includes every section');
+    check(markdown.includes('## Individual agents') && markdown.includes('5–10 individuals'), 'Individual-agent pilot is documented and exported');
+    check(markdown.includes('12.85') && markdown.includes('240/256'), 'Measured baseline diagnosis is documented and exported');
+    check(markdown.includes('D09') && markdown.includes('D10') && markdown.includes('D11'), 'User priorities and discussion capture are recorded');
+    check(markdown.includes('## Interface vision') && markdown.includes('UI-1') && markdown.includes('D12'), 'Non-combat interface direction and review gates are documented');
+    check(markdown.includes('## UI rebuild plan') && markdown.includes('viewer_v2') && markdown.includes('D13'), 'Gated viewer V2 execution plan is documented and exported');
+    check(markdown.includes('Pygame-ce') && markdown.includes('Godot 4') && markdown.includes('D14'), 'Renderer comparison and platform gate are documented and exported');
+    check(markdown.includes('20.0676') && markdown.includes('Cooking 15') && markdown.includes('6.7744'), 'Rule-baseline repair evidence and limitation are documented and exported');
+    check(markdown.includes('Technology-value ablation') && markdown.includes('11 seeds') && markdown.includes('D15'), 'Technology ablation result and decision are documented and exported');
+    w.dispatchEvent(new w.Event('beforeprint'));
+    check(d.querySelectorAll('.print-section').length === sectionCount, 'Print includes every section');
+    w.dispatchEvent(new w.Event('afterprint'));
+    check(d.querySelectorAll('.task').length === taskItems.length, 'After print restores the selected page');
+    frame.style.width = '390px'; await wait();
+    check(d.documentElement.scrollWidth <= d.documentElement.clientWidth + 1, 'Mobile work queue has no page overflow');
+    frame.src = 'ALIVE_Handbook.html#roadmap';
+    await new Promise(resolve=>frame.addEventListener('load',resolve,{once:true}));
+    w = frame.contentWindow; d = frame.contentDocument;
+    check(d.querySelector('h1').textContent === 'Roadmap', 'Standalone edition renders and supports deep links');
+    check(w.ALIVE_MARKDOWN() === markdown, 'Standalone and website Markdown are identical');
+    report.textContent = `PASS: ${checks.length} browser checks\n` + checks.join('\n');
+  } catch (error) { report.textContent = `FAIL: ${error.message}\n` + checks.join('\n'); }
+})();
+</script></html>

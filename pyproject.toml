@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "alive-simulation"
+version = "0.1.0"
+description = "Community survival and technology learning with recurrent PPO"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+viewer = ["pygame-ce>=2.5,<3"]
+rl = ["numpy>=1.26,<3", "torch>=2.2,<3", "gymnasium>=1.0,<2"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

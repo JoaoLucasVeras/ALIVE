@@ -1,0 +1,30 @@
+{
+  "record_type": "aggregate diagnostic measurements transcribed from executed console output",
+  "date": "2026-10-10",
+  "scope": "Read-only diagnosis before rule-policy fixes; no RL runs or simulation changes",
+  "configuration": {
+    "source": "Current local defaults in src/alive/environment/scenarios.py and resolver.py",
+    "code_revision": "Uncommitted local implementation; no immutable code snapshot attached",
+    "seed_start": 0, "seed_end_inclusive": 19,
+    "runs_per_controller_per_scenario": 20, "total_runs": 80,
+    "starting_population": 40, "max_steps": 256,
+    "base_gather_amount": 4, "food_per_person_per_step": 0.05,
+    "movement_food_cost": 0.25, "passive_resource_decay_rate": 0.01,
+    "population_loss_per_missing_food": 0.5
+  },
+  "results": [
+    {"scenario":"stable","controller":"rules","mean_final_population":12.85,"population_range":[8.28,15.9],"mean_shortage_turns":220.8,"runs_with_discoveries":0,"collapsed":0,"reached_limit":20},
+    {"scenario":"stable","controller":"random","mean_final_population":0.0,"population_range":[0.0,0.0],"mean_shortage_turns":103.2,"runs_with_discoveries":18,"collapsed":20,"reached_limit":0},
+    {"scenario":"scarcity","controller":"rules","mean_final_population":4.81,"population_range":[3.38,6.88],"mean_shortage_turns":242.2,"runs_with_discoveries":0,"collapsed":0,"reached_limit":20},
+    {"scenario":"scarcity","controller":"random","mean_final_population":0.0,"population_range":[0.0,0.0],"mean_shortage_turns":101.9,"runs_with_discoveries":7,"collapsed":20,"reached_limit":0}
+  ],
+  "stable_rules_seed_42": {
+    "anchor_food_regeneration": 0.7892, "initial_food_demand": 2.0,
+    "final_population": 15.873517769729323,
+    "actions": {"experiment:fire":5,"move:east":1,"gather:wood":3,"move:west":1,"gather:food":240,"move:south":3,"move:north":3},
+    "first_shortage": 35, "distinct_positions_last_100_turns": 1,
+    "discovered": [], "fire_discovery_progress": 0.6
+  },
+  "method": "run_episode(RuleAgent() or RandomAgent(), scenario_by_name(stable or scarcity), seed) for seeds 0..19; additional stable Rules episode at seed 42. Aggregates are rounded as printed in the diagnostic output.",
+  "limitations": ["No complete per-run traces or immutable configuration/code snapshot preserved for this initial batch.", "A future before/after evaluation must preserve those artifacts.", "These measurements do not prove the entire world is unsustainable, evaluate RL, or establish future individual-agent feasibility on specific hardware."]
+}

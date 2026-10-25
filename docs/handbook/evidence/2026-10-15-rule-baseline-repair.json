@@ -1,0 +1,79 @@
+{
+  "title": "Yield-aware rule baseline repair",
+  "date": "2026-10-15",
+  "scope": "RuleAgent policy only; no environment, resolver, reward, observation, action, or technology definition changed.",
+  "configuration": {
+    "scenarios": ["stable", "scarcity"],
+    "seeds": "0-19",
+    "episodes_per_scenario": 20,
+    "max_steps": 256,
+    "starting_population": 40.0,
+    "controller": "RuleAgent"
+  },
+  "before": {
+    "source": "docs/handbook/evidence/2026-10-10-baseline-diagnosis.json",
+    "stable": {
+      "mean_final_population": 12.85,
+      "runs_with_discovery": 0,
+      "collapsed": 0
+    },
+    "scarcity": {
+      "mean_final_population": 4.81,
+      "runs_with_discovery": 0,
+      "collapsed": 0
+    }
+  },
+  "after": {
+    "stable": {
+      "mean_final_population": 20.0676,
+      "runs_with_discovery": 20,
+      "total_discoveries": 43,
+      "discoveries_by_technology": {
+        "fire": 20,
+        "cooking": 15,
+        "basic_tools": 6,
+        "storage": 2
+      },
+      "collapsed": 0,
+      "mean_shortage": 39.8648
+    },
+    "scarcity": {
+      "mean_final_population": 6.7744,
+      "runs_with_discovery": 2,
+      "total_discoveries": 2,
+      "discoveries_by_technology": {
+        "fire": 2,
+        "cooking": 0,
+        "basic_tools": 0,
+        "storage": 0
+      },
+      "collapsed": 0,
+      "mean_shortage": 66.4512
+    }
+  },
+  "stable_seed_42": {
+    "final_population": 30.7129,
+    "discovered": ["fire", "cooking", "basic_tools"],
+    "shortage_total": 18.5741,
+    "action_counts": {
+      "experiment:basic_tools": 11,
+      "experiment:cooking": 12,
+      "experiment:fire": 9,
+      "gather:food": 86,
+      "gather:stone": 6,
+      "gather:wood": 14,
+      "move:east": 34,
+      "move:north": 25,
+      "move:south": 25,
+      "move:west": 34
+    },
+    "longest_same-position_food_gather_streak": 4,
+    "food_gathers_below_one_unit": 0
+  },
+  "interpretation": [
+    "The stable scenario now demonstrates improved population retention and at least one completed technology in every measured seed; 15 runs completed Cooking, 6 completed Basic Tools, and 2 completed Storage.",
+    "The seed-42 depleted-food trap is removed: the policy no longer gathers sub-one-unit food and does not remain gathering at one position for long stretches.",
+    "Scarcity population retention improved and 2 runs completed Fire, but no scarcity run reached later technologies. The repair is therefore a successful stable-baseline milestone, not proof that scarcity is balanced or that RL learns.",
+    "The hand-written baseline now uses memory of previously observed cells. This is comparable to recurrent policy memory and does not expose hidden world state."
+  ]
+}

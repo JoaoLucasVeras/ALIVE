@@ -1,0 +1,84 @@
+{
+  "title": "Stable-scenario technology research ablation",
+  "date": "2026-10-16",
+  "question": "Does allowing the same rule strategy to research technology improve outcomes?",
+  "design": {
+    "scenario": "stable",
+    "seeds": "0-19",
+    "paired_runs": 20,
+    "maximum_steps": 256,
+    "enabled_condition": "Yield-aware RuleAgent with research enabled",
+    "restricted_condition": "The same RuleAgent with experiment choices suppressed",
+    "unchanged": [
+      "World generation and seed",
+      "Resource and population mechanics",
+      "Technology graph and effects",
+      "Reward function",
+      "Non-research resource and exploration logic"
+    ],
+    "command": "python -m alive.evaluate --scenario stable --episodes 20 --seed-start 0 --technology-ablation --output results/technology_value_stable"
+  },
+  "aggregate": {
+    "research_enabled": {
+      "mean_population_retained": 0.5016904149841709,
+      "population_standard_deviation": 0.24546770027768178,
+      "mean_final_population": 20.067616599366836,
+      "mean_return": 165.40423467092347,
+      "mean_shortage": 39.86476680126633,
+      "mean_discovered": 2.15
+    },
+    "research_restricted": {
+      "mean_population_retained": 0.5108310933103751,
+      "population_standard_deviation": 0.13798491939333424,
+      "mean_final_population": 20.433243732415004,
+      "mean_return": 195.33008464576648,
+      "mean_shortage": 39.13351253516999,
+      "mean_discovered": 0.0
+    },
+    "enabled_minus_restricted": {
+      "mean_population_retained": -0.009140678326204287,
+      "mean_final_population": -0.36562713304816974,
+      "mean_return": -29.92584997484302,
+      "mean_shortage": 0.7312542660963404,
+      "enabled_population_wins": 11,
+      "restricted_population_wins": 9,
+      "ties": 0
+    }
+  },
+  "descriptive_depth_groups": {
+    "one_completed_node": {"runs": 5, "mean_population_retained_delta": 0.022010548868230645},
+    "two_completed_nodes": {"runs": 9, "mean_population_retained_delta": -0.05611740420894135},
+    "three_completed_nodes": {"runs": 4, "mean_population_retained_delta": -0.04660306874602109},
+    "four_completed_nodes": {"runs": 2, "mean_population_retained_delta": 0.19930130099965881}
+  },
+  "paired_population_deltas": [
+    {"seed": 0, "delta": -0.262962, "completed_nodes": 2},
+    {"seed": 1, "delta": 0.030283, "completed_nodes": 2},
+    {"seed": 2, "delta": 0.184965, "completed_nodes": 4},
+    {"seed": 3, "delta": -0.282281, "completed_nodes": 2},
+    {"seed": 4, "delta": 0.162248, "completed_nodes": 3},
+    {"seed": 5, "delta": -0.22555, "completed_nodes": 2},
+    {"seed": 6, "delta": 0.051037, "completed_nodes": 3},
+    {"seed": 7, "delta": -0.091973, "completed_nodes": 1},
+    {"seed": 8, "delta": 0.047222, "completed_nodes": 2},
+    {"seed": 9, "delta": -0.271766, "completed_nodes": 2},
+    {"seed": 10, "delta": -0.000108, "completed_nodes": 1},
+    {"seed": 11, "delta": 0.094128, "completed_nodes": 1},
+    {"seed": 12, "delta": 0.029938, "completed_nodes": 1},
+    {"seed": 13, "delta": -0.253178, "completed_nodes": 3},
+    {"seed": 14, "delta": 0.247911, "completed_nodes": 2},
+    {"seed": 15, "delta": -0.146519, "completed_nodes": 3},
+    {"seed": 16, "delta": 0.213638, "completed_nodes": 4},
+    {"seed": 17, "delta": 0.078069, "completed_nodes": 1},
+    {"seed": 18, "delta": 0.323745, "completed_nodes": 2},
+    {"seed": 19, "delta": -0.111657, "completed_nodes": 2}
+  ],
+  "interpretation": [
+    "Research enabled and restricted conditions have nearly equal mean final population; enabled is lower by about 0.91 percentage points of starting population.",
+    "Research wins more individual seeds (11 of 20) but has greater variance and several large losses, so technology is context-dependent under the current policy and world distribution.",
+    "The enabled policy has a lower mean return and slightly more shortage. Research costs are not consistently recovered within 256 turns.",
+    "The two runs completing all four technologies show a large positive descriptive mean, but two runs are far too few for a general claim.",
+    "This is a net strategy ablation, not an isolated estimate for Fire, Cooking, Basic Tools, or Storage and not evidence about RL behavior."
+  ],
+  "full_local_outputs": "results/technology_value_stable/ contains configuration, summary, CSV, HTML, comparison, fixed replays, and every complete trace; results are intentionally git-ignored."
+}

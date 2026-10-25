@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.venv/
+.venv-viewer/
+*.egg-info/
+results/
+tmp/
+rendered_*/
