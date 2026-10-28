@@ -1,4 +1,4 @@
-"""Action vocabulary and discrete encoding for ALIVE Level 1.
+"""Action vocabulary and discrete encoding for ALIVE Version 1.
 
 Every controller uses these same action objects. Random and rule-based agents
 can work with their readable form, while reinforcement-learning policies use the
@@ -145,7 +145,7 @@ class ActionCatalog:
 
     @classmethod
     def for_graph(cls, graph: TechnologyGraph) -> ActionCatalog:
-        """Build the canonical Level 1 catalog for a technology graph.
+        """Build the canonical Version 1 catalog for a technology graph.
 
         Ordering is part of the model interface and must not change without an
         explicit compatibility migration.

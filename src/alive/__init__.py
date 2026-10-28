@@ -1,3 +1,3 @@
-"""ALIVE Level 1: one community learning survival and technology strategies."""
+"""ALIVE Version 1.3: one community learning survival, technology and population strategies."""
 
-__version__ = "0.1.0"
+__version__ = "1.3.0"

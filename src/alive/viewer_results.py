@@ -50,14 +50,18 @@ class RunRecording:
             "shortage_turns": len(shortage_turns),
             "first_shortage": shortage_turns[0] if shortage_turns else None,
             "shortage_total": sum(r["shortage"] for r in records),
+            "total_births": sum(r.get("births", 0.0) for r in records),
+            "total_deaths": sum(r.get("starvation_deaths", 0.0) + r.get("natural_deaths", 0.0) for r in records),
+            "peak_population": max(state.community.population for state in self.states[:turn + 1]),
+            "population_dynamics": self.configuration.get("population_dynamics", False),
             "return": sum(r["reward"] for r in records),
             "discovered": last.get("discovered", []),
             "actions": dict(Counter(r["action"].split(":")[0] for r in records)),
         }
 
-    def baseline_comparison(self):
-        """Full reference episodes use this exact scenario/seed and no live RNG."""
-        return [dict(agent=name, **run_episode(agent, self.scenario, self.states[0].episode_seed))
+    def baseline_comparison(self, resolver=None):
+        """Full reference episodes use this exact scenario/seed and resolver rules."""
+        return [dict(agent=name, **run_episode(agent, self.scenario, self.states[0].episode_seed, resolver))
                 for name, agent in (("random", RandomAgent()), ("rules", RuleAgent()))]
 
     def export(self, root="results/viewer_runs", comparisons=()):
@@ -71,7 +75,7 @@ class RunRecording:
                    "baseline_comparisons": list(comparisons)}
         (folder / "run.json").write_text(json.dumps(payload, indent=2, default=self._json_value), encoding="utf-8")
         with (folder / "turns.csv").open("w", newline="", encoding="utf-8") as stream:
-            fields = ["step", "action", "population", "food", "wood", "stone", "shortage", "food_consumed", "movement_food_spent", "gathered_resource", "gathered_amount", "reward", "technology_completed"]
+            fields = ["step", "action", "population", "food", "wood", "stone", "shortage", "food_consumed", "movement_food_spent", "births", "starvation_deaths", "natural_deaths", "birth_food_spent", "labor", "labor_multiplier", "gathered_resource", "gathered_amount", "reward", "technology_completed"]
             fields += [f"{key}_{name}" for key in ('resource_changes', 'research_cost', 'maintenance_paid', 'decay_losses') for name in ('food', 'wood', 'stone')]
             writer = csv.DictWriter(stream, fieldnames=fields, extrasaction="ignore")
             writer.writeheader()

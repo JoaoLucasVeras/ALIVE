@@ -1,4 +1,4 @@
-"""Seeded reference scenarios for ALIVE Level 1.
+"""Seeded reference scenarios for ALIVE Version 1.
 
 Scenarios configure and initialize the generic simulation engine; they do not
 change its rules. The built-in stable and scarcity presets are reproducible
@@ -83,7 +83,7 @@ class ScenarioInstance:
 
 @dataclass(frozen=True, slots=True)
 class ScenarioDefinition:
-    """Validated, seedable recipe for a family of Level 1 worlds."""
+    """Validated, seedable recipe for a family of Version 1 worlds."""
 
     name: str
     description: str
@@ -102,7 +102,7 @@ class ScenarioDefinition:
         if len(resources) != len(set(resources)):
             raise ValueError("scenario can define each resource distribution only once")
         if set(resources) != set(Resource):
-            raise ValueError("Level 1 scenarios must configure food, wood, and stone")
+            raise ValueError("Version 1 scenarios must configure food, wood, and stone")
 
         cell_count = self.world_config.width * self.world_config.height
         for distribution in self.deposits:

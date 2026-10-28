@@ -6,15 +6,16 @@ import html
 import json
 from pathlib import Path
 from statistics import mean, stdev
-from .baseline_agents import RandomAgent, RuleAgent, RESEARCH_STRATEGIES
+from .baseline_agents import GrowthAwareRuleAgent, RandomAgent, RuleAgent, RESEARCH_STRATEGIES
 from .environment.episode import Episode, run_episode
+from .environment.resolver import ActionResolver, ResolverConfig
 from .environment.scenarios import scenario_by_name
 
 
 def evaluate(scenario="stable", episodes=20, seed_start=10000,
              checkpoint=None, output="results/evaluation",
              technology_ablation=False, research_strategy="all",
-             compare_research_strategies=False):
+             compare_research_strategies=False, population_dynamics=False):
     if episodes < 1 or seed_start < 0:
         raise ValueError("episodes must be positive and seeds non-negative")
     if research_strategy not in RESEARCH_STRATEGIES:
@@ -29,6 +30,12 @@ def evaluate(scenario="stable", episodes=20, seed_start=10000,
             f"rules_{strategy}": RuleAgent(research_strategy=strategy)
             for strategy in RESEARCH_STRATEGIES
         }}
+    resolver = None
+    if population_dynamics:
+        if checkpoint:
+            raise ValueError("RL checkpoints were trained without population dynamics")
+        resolver = ActionResolver(ResolverConfig.with_population_dynamics())
+        agents["rules_growth_aware"] = GrowthAwareRuleAgent(research_strategy=research_strategy)
     if technology_ablation:
         agents["rules_no_research"] = RuleAgent(research_enabled=False)
     if checkpoint:
@@ -51,6 +58,7 @@ def evaluate(scenario="stable", episodes=20, seed_start=10000,
         "seeds": list(range(seed_start, seed_start + episodes)),
         "checkpoint": checkpoint,
         "technology_ablation": technology_ablation,
+        "population_dynamics": population_dynamics,
         "agents": list(agents),
         "compare_research_strategies": compare_research_strategies,
         "research_strategies": {name: agent.research_strategy for name, agent in agents.items()
@@ -63,7 +71,7 @@ def evaluate(scenario="stable", episodes=20, seed_start=10000,
     for name, agent in agents.items():
         runs = []
         for seed in range(seed_start, seed_start + episodes):
-            complete_result = run_episode(agent, definition, seed)
+            complete_result = run_episode(agent, definition, seed, resolver)
             complete_result["research_strategy"] = configuration["research_strategies"].get(name)
             (run_path / f"{name}_seed_{seed}.json").write_text(
                 json.dumps(complete_result, indent=2), encoding="utf-8"
@@ -208,6 +216,8 @@ def main():
                         help="rule-policy research path; cooking includes its Fire prerequisite")
     parser.add_argument("--compare-research-strategies", action="store_true",
                         help="compare none, fire, cooking and all on identical seeds, plus Random")
+    parser.add_argument("--population-dynamics", action="store_true",
+                        help="Version 1.3: enable births/deaths/labour and add a growth-aware rule agent")
     parser.add_argument(
         "--technology-ablation",
         action="store_true",

@@ -64,11 +64,21 @@ class Episode:
             "resource_changes": {name: getattr(self.state.community.resources, name) - getattr(before.community.resources, name)
                                  for name in ("food", "wood", "stone")},
         }
+        if self.resolver.config.population_dynamics_enabled:
+            # Version 1.3 fields appear only when enabled, keeping Version 1/1.2 traces identical.
+            info.update({
+                "births": outcome.births,
+                "starvation_deaths": outcome.starvation_deaths,
+                "natural_deaths": outcome.natural_deaths,
+                "birth_food_spent": outcome.birth_food_spent,
+                "labor_multiplier": outcome.labor_multiplier,
+                "labor": self.state.community.available_labor,
+            })
         info["decay_losses"] = {
             name: max(0.0, getattr(before.community.resources, name)
                       + (outcome.gathered_amount if info["gathered_resource"] == name else 0)
                       - research_cost[name] - info["maintenance_paid"][name]
-                      - (outcome.food_consumed + outcome.movement_food_spent if name == "food" else 0)
+                      - (outcome.food_consumed + outcome.movement_food_spent + outcome.birth_food_spent if name == "food" else 0)
                       - getattr(self.state.community.resources, name))
             for name in ("food", "wood", "stone")
         }

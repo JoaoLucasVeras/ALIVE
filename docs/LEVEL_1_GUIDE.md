@@ -1,4 +1,4 @@
-# How Level 1 works
+# How Version 1 works (extended in 1.2 and 1.3)
 
 One community chooses an action, experiences its consequences, and receives an outcome-based reward. During training, recurrent PPO adjusts neural-network weights across many episodes. During evaluation the weights stay fixed while GRU memory evolves within each episode.
 
@@ -76,7 +76,7 @@ Use the setup and commands in README.md. The Gymnasium adapter expects callers t
 
 Use `--technology-ablation` to add `rules_no_research`, the same yield-aware rule strategy with all experiment choices suppressed. The evaluator records identical seeds, configuration, summary metrics, every full run, and paired enabled-minus-restricted differences. This tests the net value of the strategy's research decisions; it does not change the environment's technology graph or isolate one node at a time.
 
-No remote publication is part of Level 1 completion. Existing proposals and presentation assets remain in the workspace.
+No remote publication is part of Version 1 completion. Existing proposals and presentation assets remain in the workspace.
 
 ## Configurable research strategies
 

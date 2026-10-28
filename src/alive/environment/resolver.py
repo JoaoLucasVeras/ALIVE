@@ -1,6 +1,6 @@
-"""Deterministic action resolution for ALIVE Level 1.
+"""Deterministic action resolution for ALIVE Version 1.
 
-The resolver is the only Level 1 component allowed to apply action consequences.
+The resolver is the only Version 1 component allowed to apply action consequences.
 It accepts a legal action and an immutable world state, then returns a new state
 plus explicit outcome metrics for rewards, debugging, and replay.
 """
@@ -18,7 +18,7 @@ from .world import GridWorld, ResourceDeposit, WorldState
 
 @dataclass(frozen=True, slots=True)
 class ResolverConfig:
-    """Tunable Level 1 transition parameters."""
+    """Tunable Version 1 transition parameters."""
 
     base_gather_amount: float = 4.0
     movement_food_cost: float = 0.25
@@ -26,9 +26,48 @@ class ResolverConfig:
     conserve_food_multiplier: float = 0.75
     population_loss_per_missing_food: float = 0.5
     passive_resource_decay_rate: float = 0.01
+    # Version 1.3 population dynamics. All defaults leave Version 1/1.2 unchanged.
+    birth_rate_per_step: float = 0.0
+    birth_food_cost: float = 1.0
+    birth_reserve_per_person: float = 0.5
+    natural_death_rate_per_step: float = 0.0
+    max_population: float = 120.0
+    labor_scales_gathering: bool = False
+    max_labor_multiplier: float = 2.0
+
+    @classmethod
+    def with_population_dynamics(cls, **overrides) -> "ResolverConfig":
+        """Return the Version 1.3 preset: births, deaths, and labour-scaled gathering."""
+
+        values = dict(
+            birth_rate_per_step=0.03,
+            natural_death_rate_per_step=0.002,
+            birth_reserve_per_person=0.2,
+            labor_scales_gathering=True,
+        )
+        values.update(overrides)
+        return cls(**values)
+
+    @property
+    def population_dynamics_enabled(self) -> bool:
+        return (
+            self.birth_rate_per_step > 0
+            or self.natural_death_rate_per_step > 0
+            or self.labor_scales_gathering
+        )
 
     def __post_init__(self) -> None:
+        for name in ("birth_rate_per_step", "natural_death_rate_per_step"):
+            value = getattr(self, name)
+            if not isfinite(value) or not 0 <= value <= 1:
+                raise ValueError(f"{name} must be between 0 and 1")
+        if not isfinite(self.max_population) or self.max_population <= 0:
+            raise ValueError("max_population must be finite and positive")
+        if not isfinite(self.max_labor_multiplier) or self.max_labor_multiplier < 1:
+            raise ValueError("max_labor_multiplier must be at least 1")
         non_negative = {
+            "birth_food_cost": self.birth_food_cost,
+            "birth_reserve_per_person": self.birth_reserve_per_person,
             "base_gather_amount": self.base_gather_amount,
             "movement_food_cost": self.movement_food_cost,
             "food_per_person_per_step": self.food_per_person_per_step,
@@ -63,6 +102,11 @@ class StepOutcome:
     food_consumed: float = 0.0
     food_shortage: float = 0.0
     population_change: float = 0.0
+    births: float = 0.0
+    starvation_deaths: float = 0.0
+    natural_deaths: float = 0.0
+    birth_food_spent: float = 0.0
+    labor_multiplier: float = 1.0
 
 
 @dataclass(frozen=True, slots=True)
@@ -92,6 +136,7 @@ class ActionResolver:
         discovery_progress_gained = 0.0
         technology_completed: str | None = None
         movement_food_spent = 0.0
+        labor_multiplier = 1.0
 
         if action.kind is ActionKind.MOVE:
             assert action.direction is not None
@@ -115,8 +160,9 @@ class ActionResolver:
                 community.technologies,
                 TechnologyEffectKind.GATHER_YIELD_MULTIPLIER,
             )
+            labor_multiplier = self._labor_multiplier(world, community)
             updated_deposit, gathered_amount = deposit.harvested(
-                self.config.base_gather_amount * gather_multiplier
+                self.config.base_gather_amount * gather_multiplier * labor_multiplier
             )
             deposits = self._replace_deposit(deposits, updated_deposit)
             community = replace(
@@ -160,11 +206,19 @@ class ActionResolver:
             required_food,
         )
         total_shortage = movement_shortage + survival_shortage
-        population_loss = min(
+        starvation_deaths = min(
             community.population,
             total_shortage * self.config.population_loss_per_missing_food,
         )
-        next_population = community.population - population_loss
+        natural_deaths = min(
+            community.population - starvation_deaths,
+            community.population * self.config.natural_death_rate_per_step,
+        )
+        survivors = community.population - starvation_deaths - natural_deaths
+        births, resources, birth_food_spent = self._births(
+            survivors, resources, total_shortage
+        )
+        next_population = survivors + births
 
         decay_multiplier = world.technology_graph.active_multiplier(
             community.technologies,
@@ -198,8 +252,52 @@ class ActionResolver:
             deactivated_technologies=deactivated_technologies,
             food_consumed=food_consumed,
             food_shortage=total_shortage,
-            population_change=-population_loss,
+            population_change=(
+                births - (starvation_deaths + natural_deaths)
+                if births
+                else -(starvation_deaths + natural_deaths)
+            ),
+            births=births,
+            starvation_deaths=starvation_deaths,
+            natural_deaths=natural_deaths,
+            birth_food_spent=birth_food_spent,
+            labor_multiplier=labor_multiplier,
         )
+
+    def _labor_multiplier(self, world: GridWorld, community: CommunityState) -> float:
+        """Scale gathering by available labour relative to the starting workforce."""
+
+        if not self.config.labor_scales_gathering:
+            return 1.0
+        reference = world.config.starting_population * world.config.labor_fraction
+        if reference <= 0:
+            return 1.0
+        # Diminishing returns (square root): a bigger workforce gathers more, but not
+        # proportionally, and a smaller one is not instantly crippled.
+        ratio = community.available_labor / reference
+        return min(self.config.max_labor_multiplier, ratio ** 0.5)
+
+    def _births(
+        self,
+        population: float,
+        resources: ResourceInventory,
+        shortage: float,
+    ) -> tuple[float, ResourceInventory, float]:
+        """Fed communities grow logistically; each birth costs food."""
+
+        config = self.config
+        if config.birth_rate_per_step <= 0 or population <= 0 or shortage > 0:
+            return 0.0, resources, 0.0
+        room = max(0.0, 1.0 - population / config.max_population)
+        desired = population * config.birth_rate_per_step * room
+        surplus = resources.food - config.birth_reserve_per_person * population
+        if config.birth_food_cost > 0:
+            affordable = max(0.0, surplus) / config.birth_food_cost
+        else:
+            affordable = desired
+        births = min(desired, affordable)
+        food_spent = births * config.birth_food_cost
+        return births, replace(resources, food=resources.food - food_spent), food_spent
 
     def _experiment(
         self,

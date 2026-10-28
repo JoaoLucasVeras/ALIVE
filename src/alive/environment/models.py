@@ -14,7 +14,7 @@ from typing import Iterable
 
 
 class Resource(StrEnum):
-    """Resource categories available in the Level 1 world."""
+    """Resource categories available in the Version 1 world."""
 
     FOOD = "food"
     WOOD = "wood"
@@ -143,7 +143,7 @@ class TechnologyProgress:
 
 @dataclass(frozen=True, slots=True)
 class CommunityState:
-    """Complete engine-owned state for the single Level 1 community."""
+    """Complete engine-owned state for the single Version 1 community."""
 
     community_id: str
     position: Position
@@ -181,7 +181,7 @@ class CommunityState:
 
 @dataclass(frozen=True, slots=True)
 class WorldConfig:
-    """Validated dimensions and starting values for a Level 1 episode."""
+    """Validated dimensions and starting values for a Version 1 episode."""
 
     width: int = 16
     height: int = 16

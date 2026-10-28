@@ -112,6 +112,32 @@ class ViewerTests(unittest.TestCase):
         viewer.select_tab('Results')
         viewer.draw()
 
+    def test_growth_toggle_restarts_same_seed_and_matches_headless(self):
+        from alive.environment.resolver import ActionResolver, ResolverConfig
+        viewer = self.viewer
+        for _ in range(5):
+            viewer.step()
+        viewer.toggle_population_dynamics()
+        self.assertTrue(viewer.population_dynamics)
+        self.assertEqual((viewer.seed, viewer.scenario, viewer.episode.state.step), (42, "stable", 0))
+        while viewer.step():
+            pass
+        expected = run_episode(RuleAgent(), stable_scenario(), 42, ActionResolver(ResolverConfig.with_population_dynamics()))
+        self.assertEqual(viewer.recording.turns[-1]["population"], expected["trace"][-1]["population"])
+        viewer.compare()
+        self.assertEqual(viewer.comparisons[1]["trace"], expected["trace"])
+        self.assertTrue(viewer.recording.configuration["population_dynamics"])
+        self.assertGreater(viewer.recording.summary()["total_births"], 0)
+        for tab in ("Watch", "Results", "Guide"):
+            viewer.select_tab(tab)
+            viewer.draw()
+        with tempfile.TemporaryDirectory() as root:
+            folder = viewer.recording.export(root, viewer.comparisons)
+            data = json.loads((folder / "run.json").read_text(encoding="utf-8"))
+            self.assertTrue(data["engine_configuration"]["population_dynamics"])
+            self.assertGreater(data["engine_configuration"]["resolver"]["birth_rate_per_step"], 0)
+            self.assertIn("births", (folder / "turns.csv").read_text(encoding="utf-8").splitlines()[0])
+
     def test_timeline_click_and_non_watch_keys(self):
         viewer = self.viewer
         for _ in range(10):

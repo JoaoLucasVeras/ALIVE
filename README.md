@@ -1,7 +1,9 @@
 # ALIVE
 Adaptive Life in Virtual Environments: a simulation where virtual communities learn survival and technology strategies through reinforcement learning.
 
-Level 1 implements one community, three resources, four technologies, stable and scarcity worlds, random and rule-based baselines, and a masked recurrent PPO learner. Multiple communities, trading, sharing, scheduled environmental shocks, and LLM assistance belong to later levels.
+**Versions.** Version 1 is the shared simulation foundation. Version 1.2 (Akshay) adds research-strategy comparison. Version 1.3 (Aryan) adds population dynamics: births, deaths and labour-scaled gathering.
+
+Version 1 implements one community, three resources, four technologies, stable and scarcity worlds, random and rule-based baselines, and a masked recurrent PPO learner. Multiple communities, trading, sharing, scheduled environmental shocks, and LLM assistance belong to later levels.
 
 ## Project handbook · start here
 
@@ -103,3 +105,13 @@ python -m alive.viewer --controller rl --checkpoint results/ppo_smoke/policy.pt
 ```
 
 The settlers represent one aggregate community, not individually simulated people. Animated legs, resource particles and research pulses are presentation effects; movement and resource outcomes come from the actual engine. The current population balance can still lead to decline or collapse. See [the viewer guide](docs/VIEWER_GUIDE.md).
+
+## Version 1.3: population dynamics
+
+Opt-in, off by default so Version 1 and 1.2 results are unchanged. Enable it with `ResolverConfig.with_population_dynamics()`, or in the viewer:
+
+```powershell
+python -m alive.viewer --population-dynamics
+```
+
+or click **Growth: On/Off** on the Watch tab (restarts the same scenario and seed). Rules: each turn without a food shortage, births = population x 3% x (1 - population/120), limited by food above a 0.2 food/person reserve, each birth costing 1 food; natural deaths remove 0.2% per turn; starvation deaths work as before; gathering scales with the square root of labour relative to the starting workforce (capped at 2x). Reference runs and exports use the same rules. RL checkpoints were trained without growth, so Growth is unavailable with the RL controller. See [the Version 1.3 contribution record](docs/VERSION_1_3_CONTRIBUTION.md).

@@ -1,4 +1,4 @@
-"""Grid-world state and legality rules for ALIVE Level 1.
+"""Grid-world state and legality rules for ALIVE Version 1.
 
 This module owns spatial facts and passive world behavior. It knows where the
 community and resource deposits are, what the community can currently see, how
@@ -72,7 +72,7 @@ class ResourceDeposit:
 
 @dataclass(frozen=True, slots=True)
 class WorldState:
-    """Complete replayable state for one point in a Level 1 episode."""
+    """Complete replayable state for one point in a Version 1 episode."""
 
     step: int
     episode_seed: int
@@ -98,7 +98,7 @@ class WorldState:
 
 @dataclass(frozen=True, slots=True)
 class GridWorld:
-    """Validated Level 1 world definition and passive transition rules."""
+    """Validated Version 1 world definition and passive transition rules."""
 
     config: WorldConfig
     technology_graph: TechnologyGraph

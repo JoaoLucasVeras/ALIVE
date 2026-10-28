@@ -1,4 +1,4 @@
-"""Technology definitions and graph rules for ALIVE Level 1.
+"""Technology definitions and graph rules for ALIVE Version 1.
 
 The technology layer describes what can be discovered and which numeric world
 effects become active afterward. It does not decide what a community should
@@ -220,7 +220,7 @@ class TechnologyGraph:
 
 
 def starter_technology_graph() -> TechnologyGraph:
-    """Return the intentionally small four-node graph used by Level 1."""
+    """Return the intentionally small four-node graph used by Version 1."""
 
     return TechnologyGraph(
         technologies=(

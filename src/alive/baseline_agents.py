@@ -38,6 +38,9 @@ class RuleAgent(RandomAgent):
     _RESOURCE_TARGETS = {"food": 30.0, "wood": 14.0, "stone": 12.0}
     _NEW_RESEARCH_FOOD_FLOOR = 8.0
     _RESEARCH_RESUME_FOOD_FLOOR = 6.0
+    _FOOD_TARGET_BASE = 20.0
+    _FOOD_TARGET_SLOPE = 10.0
+    _USEFUL_YIELD_SCALE = 1.5
 
     def __init__(self, *, research_enabled: bool = True, research_strategy: str = "all"):
         if not isinstance(research_enabled, bool):
@@ -190,7 +193,7 @@ class RuleAgent(RandomAgent):
 
         population_ratio = f["population"]
         targets = dict(self._RESOURCE_TARGETS)
-        targets["food"] = 20.0 + 10.0 * population_ratio
+        targets["food"] = self._FOOD_TARGET_BASE + self._FOOD_TARGET_SLOPE * population_ratio
         target = (
             "food"
             if legal_research
@@ -204,7 +207,7 @@ class RuleAgent(RandomAgent):
 
         # A deposit that supplies materially less than one step of food demand
         # should not hold the policy forever simply because gathering remains legal.
-        useful_yield = max(1.0, 1.5 * population_ratio)
+        useful_yield = max(1.0, self._USEFUL_YIELD_SCALE * population_ratio)
         current_amount = self._raw(f[f"cell:0:0:{target}"])
         gather = f"gather:{target}"
         if gather in legal and current_amount >= useful_yield:
@@ -223,3 +226,17 @@ class RuleAgent(RandomAgent):
                 return movement
 
         return self._explore(f, legal)
+
+
+class GrowthAwareRuleAgent(RuleAgent):
+    """Version 1.3 reference: keeps a larger food buffer for a growing community.
+
+    The observation caps population at its starting value, so this agent cannot
+    see growth directly. It instead holds a bigger food reserve and starts
+    research later, so births and bigger appetites do not exhaust food.
+    """
+
+    _FOOD_TARGET_BASE = 35.0
+    _FOOD_TARGET_SLOPE = 15.0
+    _NEW_RESEARCH_FOOD_FLOOR = 14.0
+    _RESEARCH_RESUME_FOOD_FLOOR = 10.0
