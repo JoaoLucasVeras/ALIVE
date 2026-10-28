@@ -49,6 +49,34 @@ python -m alive.evaluate --scenario stable --episodes 20 --seed-start 0 --techno
 
 This measures the combined cost and benefit of choosing research under the same environment. It does not isolate individual technology effects or prove causality for RL behavior.
 
+### Compare research strategies
+
+Choose the rule policy's research path with `--research-strategy none|fire|cooking|all`.
+`cooking` researches Fire first, then Cooking. `all` preserves the default behavior.
+These options restrict policy choices; the technology graph and simulation rules stay the same.
+
+```bash
+# Run from the repository root with the virtual environment active.
+python -m alive.evaluate --research-strategy fire --episodes 20 --output results/fire_only
+python -m alive.evaluate --compare-research-strategies --episodes 20 --seed-start 0 --output results/research_strategies
+```
+
+Comparison mode evaluates all four research paths plus Random on identical seeds.
+It records the selected paths in `configuration.json`, each full run, `episodes.csv`,
+and `summary.json`. `research_comparison.json` contains per-seed population,
+shortage, and return differences against no research, with win/loss/tie counts.
+Open `report.html` for retention, variance, shortages, returns, discoveries, and paired comparisons.
+Use a fresh output directory for each experiment to avoid mixing artifacts from older runs.
+
+Comparison mode and `--technology-ablation` are mutually exclusive. Neither accepts
+a non-default `--research-strategy`. RL checkpoint evaluation remains available;
+the strategy option applies only to Rules. The native viewer continues using its default rule policy.
+These are complete strategy comparisons, not isolated technology effects or evidence of RL learning.
+
+The [design specification](docs/Research_Strategy_Design_Spec.docx) describes the implementation,
+TDD evidence, and measured stable-seed results. Run the feature tests with
+`python -m unittest discover -s tests -p test_research_strategies.py -v`.
+
 See [the file-by-file guide](docs/LEVEL_1_GUIDE.md) for mechanics, contracts, limitations, and the learning loop.
 
 ## Game-style local viewer

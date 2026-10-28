@@ -10,6 +10,14 @@ from random import Random
 from .environment.observations import Observation
 
 
+RESEARCH_STRATEGIES = {
+    "none": (),
+    "fire": ("fire",),
+    "cooking": ("fire", "cooking"),
+    "all": ("fire", "cooking", "basic_tools", "storage"),
+}
+
+
 class RandomAgent:
     def reset(self, seed: int):
         self.random = Random(seed + 1_000_000)
@@ -30,12 +38,17 @@ class RuleAgent(RandomAgent):
     _RESOURCE_TARGETS = {"food": 30.0, "wood": 14.0, "stone": 12.0}
     _NEW_RESEARCH_FOOD_FLOOR = 8.0
     _RESEARCH_RESUME_FOOD_FLOOR = 6.0
-    _TECHNOLOGY_ORDER = ("fire", "cooking", "basic_tools", "storage")
 
-    def __init__(self, *, research_enabled: bool = True):
+    def __init__(self, *, research_enabled: bool = True, research_strategy: str = "all"):
         if not isinstance(research_enabled, bool):
             raise TypeError("research_enabled must be a boolean")
-        self.research_enabled = research_enabled
+        if research_strategy not in RESEARCH_STRATEGIES:
+            raise ValueError(f"unknown research strategy: {research_strategy!r}")
+        if not research_enabled and research_strategy not in ("all", "none"):
+            raise ValueError("research_enabled=False conflicts with a restricted research strategy")
+        self.research_strategy = research_strategy if research_enabled else "none"
+        self.research_enabled = self.research_strategy != "none"
+        self._research_order = RESEARCH_STRATEGIES[self.research_strategy]
 
     def reset(self, seed: int):
         super().reset(seed)
@@ -150,7 +163,7 @@ class RuleAgent(RandomAgent):
         # Once research has started, finish it while food remains above the
         # emergency floor.  If the floor is crossed, replenish and resume later.
         if self.research_enabled:
-            for technology_id in self._TECHNOLOGY_ORDER:
+            for technology_id in self._research_order:
                 progress = f[f"tech:{technology_id}:progress"]
                 label = f"experiment:{technology_id}"
                 if (
@@ -166,7 +179,7 @@ class RuleAgent(RandomAgent):
         legal_research = (
             [
                 technology_id
-                for technology_id in self._TECHNOLOGY_ORDER
+                for technology_id in self._research_order
                 if f"experiment:{technology_id}" in legal
             ]
             if self.research_enabled

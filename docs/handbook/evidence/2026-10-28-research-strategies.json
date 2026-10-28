@@ -1,0 +1,549 @@
+{
+  "date": "2026-10-28",
+  "title": "Configurable rule-policy research strategies",
+  "command": ".venv/bin/python -m alive.evaluate --compare-research-strategies --episodes 20 --seed-start 0 --output results/research_strategies",
+  "experiment_plan": {
+    "question": "Does limiting the rule policy research path improve population retention?",
+    "hypothesis": "Fire-only or Fire followed by Cooking may repay research costs more consistently than all research within 256 turns.",
+    "scenario": "stable",
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "primary_metric": "paired final population retention difference versus no research",
+    "secondary_metrics": [
+      "shortage_total",
+      "return",
+      "discoveries"
+    ],
+    "limits": "Complete strategy comparison; not isolated technology causality, RL evaluation, or a statistical significance claim."
+  },
+  "configuration": {
+    "scenario": "stable",
+    "episodes": 20,
+    "seed_start": 0,
+    "seeds": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19
+    ],
+    "checkpoint": null,
+    "technology_ablation": false,
+    "agents": [
+      "random",
+      "rules_none",
+      "rules_fire",
+      "rules_cooking",
+      "rules_all"
+    ],
+    "compare_research_strategies": true,
+    "research_strategies": {
+      "rules_none": "none",
+      "rules_fire": "fire",
+      "rules_cooking": "cooking",
+      "rules_all": "all"
+    }
+  },
+  "summary": [
+    {
+      "agent": "random",
+      "research_strategy": null,
+      "mean_population_retained": 0.0,
+      "population_std": 0.0,
+      "mean_return": 26.10405008806246,
+      "mean_shortage": 80.1410716139858,
+      "mean_discovered": 0.9
+    },
+    {
+      "agent": "rules_none",
+      "research_strategy": "none",
+      "mean_population_retained": 0.5108310933103751,
+      "population_std": 0.13798491939333424,
+      "mean_return": 195.33008464576648,
+      "mean_shortage": 39.13351253516999,
+      "mean_discovered": 0
+    },
+    {
+      "agent": "rules_fire",
+      "research_strategy": "fire",
+      "mean_population_retained": 0.47510727462583163,
+      "population_std": 0.23407452748871824,
+      "mean_return": 160.84107539320104,
+      "mean_shortage": 41.99141802993347,
+      "mean_discovered": 1
+    },
+    {
+      "agent": "rules_cooking",
+      "research_strategy": "cooking",
+      "mean_population_retained": 0.5190072096636691,
+      "population_std": 0.26543955052728924,
+      "mean_return": 166.86860603043203,
+      "mean_shortage": 38.47942322690647,
+      "mean_discovered": 1.75
+    },
+    {
+      "agent": "rules_all",
+      "research_strategy": "all",
+      "mean_population_retained": 0.5016904149841709,
+      "population_std": 0.24546770027768178,
+      "mean_return": 165.40423467092347,
+      "mean_shortage": 39.86476680126633,
+      "mean_discovered": 2.15
+    }
+  ],
+  "paired_comparison": {
+    "reference_agent": "rules_none",
+    "comparisons": [
+      {
+        "agent": "rules_fire",
+        "mean_population_retained_delta": -0.03572381868454348,
+        "mean_shortage_delta": 2.857905494763479,
+        "mean_return_delta": -34.489009252565445,
+        "wins": 10,
+        "losses": 10,
+        "ties": 0,
+        "pairs": [
+          {
+            "seed": 0,
+            "population_retained_delta": -0.2818781693581564,
+            "shortage_delta": 22.550253548652513,
+            "return_delta": -113.62663801855376
+          },
+          {
+            "seed": 1,
+            "population_retained_delta": 0.020724106711976886,
+            "shortage_delta": -1.6579285369581598,
+            "return_delta": -46.29269933855247
+          },
+          {
+            "seed": 2,
+            "population_retained_delta": 0.24103224495703024,
+            "shortage_delta": -19.282579596562414,
+            "return_delta": 11.648354337577302
+          },
+          {
+            "seed": 3,
+            "population_retained_delta": -0.3694832874782137,
+            "shortage_delta": 29.55866299825707,
+            "return_delta": -128.89417240909827
+          },
+          {
+            "seed": 4,
+            "population_retained_delta": 0.2630307107491755,
+            "shortage_delta": -21.042456859934028,
+            "return_delta": 2.314025373246267
+          },
+          {
+            "seed": 5,
+            "population_retained_delta": -0.26168430356464145,
+            "shortage_delta": 20.934744285171334,
+            "return_delta": -86.8942085519037
+          },
+          {
+            "seed": 6,
+            "population_retained_delta": -0.04494784141896574,
+            "shortage_delta": 3.5958273135173044,
+            "return_delta": -52.42551149742715
+          },
+          {
+            "seed": 7,
+            "population_retained_delta": -0.09197342375816606,
+            "shortage_delta": 7.357873900653296,
+            "return_delta": -58.39930392427004
+          },
+          {
+            "seed": 8,
+            "population_retained_delta": 0.002415343454458374,
+            "shortage_delta": -0.19322747635665394,
+            "return_delta": -2.8812382108939403
+          },
+          {
+            "seed": 9,
+            "population_retained_delta": -0.21158351777103318,
+            "shortage_delta": 16.926681421682645,
+            "return_delta": -71.11781596804448
+          },
+          {
+            "seed": 10,
+            "population_retained_delta": 0.029062936717908827,
+            "shortage_delta": -2.325034937432683,
+            "return_delta": 8.789234902987715
+          },
+          {
+            "seed": 11,
+            "population_retained_delta": 0.10343676546130681,
+            "shortage_delta": -8.274941236904596,
+            "return_delta": 9.972746807082075
+          },
+          {
+            "seed": 12,
+            "population_retained_delta": 0.02993791961508846,
+            "shortage_delta": -2.3950335692070794,
+            "return_delta": 7.749212344592166
+          },
+          {
+            "seed": 13,
+            "population_retained_delta": -0.13537040920404908,
+            "shortage_delta": 10.829632736323923,
+            "return_delta": -51.9483732539704
+          },
+          {
+            "seed": 14,
+            "population_retained_delta": 0.03256560545757925,
+            "shortage_delta": -2.60524843660637,
+            "return_delta": -0.7344311044070366
+          },
+          {
+            "seed": 15,
+            "population_retained_delta": -0.1995271148560438,
+            "shortage_delta": 15.96216918848351,
+            "return_delta": -61.422586317794725
+          },
+          {
+            "seed": 16,
+            "population_retained_delta": 0.14731905879737284,
+            "shortage_delta": -11.785524703789804,
+            "return_delta": -10.415284245290593
+          },
+          {
+            "seed": 17,
+            "population_retained_delta": -0.0032615649604308405,
+            "shortage_delta": 0.2609251968344566,
+            "return_delta": -45.115132101448836
+          },
+          {
+            "seed": 18,
+            "population_retained_delta": -0.07925537157041168,
+            "shortage_delta": 6.34042972563293,
+            "return_delta": -11.329210949729486
+          },
+          {
+            "seed": 19,
+            "population_retained_delta": 0.09496393832734507,
+            "shortage_delta": -7.597115066187612,
+            "return_delta": 11.242847074590458
+          }
+        ]
+      },
+      {
+        "agent": "rules_cooking",
+        "mean_population_retained_delta": 0.008176116353293973,
+        "mean_shortage_delta": -0.6540893082635197,
+        "mean_return_delta": -28.461478615334453,
+        "wins": 11,
+        "losses": 9,
+        "ties": 0,
+        "pairs": [
+          {
+            "seed": 0,
+            "population_retained_delta": -0.2629619058803449,
+            "shortage_delta": 21.036952470427558,
+            "return_delta": -77.91951318463315
+          },
+          {
+            "seed": 1,
+            "population_retained_delta": 0.03028309006120561,
+            "shortage_delta": -2.4226472048964567,
+            "return_delta": -45.88166305453518
+          },
+          {
+            "seed": 2,
+            "population_retained_delta": 0.22063039793672423,
+            "shortage_delta": -17.650431834937933,
+            "return_delta": 7.142118025004834
+          },
+          {
+            "seed": 3,
+            "population_retained_delta": -0.2822814216274864,
+            "shortage_delta": 22.582513730198905,
+            "return_delta": -95.3305875608373
+          },
+          {
+            "seed": 4,
+            "population_retained_delta": 0.24915551361655552,
+            "shortage_delta": -19.93244108932442,
+            "return_delta": -5.529848727429254
+          },
+          {
+            "seed": 5,
+            "population_retained_delta": -0.2255503940028069,
+            "shortage_delta": 18.04403152022455,
+            "return_delta": -103.75939260825587
+          },
+          {
+            "seed": 6,
+            "population_retained_delta": 0.08126106702838098,
+            "shortage_delta": -6.5008853622704095,
+            "return_delta": -26.42461278518246
+          },
+          {
+            "seed": 7,
+            "population_retained_delta": -0.09197342375816606,
+            "shortage_delta": 7.357873900653296,
+            "return_delta": -58.39930392427004
+          },
+          {
+            "seed": 8,
+            "population_retained_delta": 0.04722161645971301,
+            "shortage_delta": -3.7777293167770516,
+            "return_delta": 6.013683521798782
+          },
+          {
+            "seed": 9,
+            "population_retained_delta": -0.27176593746164446,
+            "shortage_delta": 21.741274996931544,
+            "return_delta": -78.2794491729299
+          },
+          {
+            "seed": 10,
+            "population_retained_delta": -0.00010836585146872801,
+            "shortage_delta": 0.008669268117508011,
+            "return_delta": -0.7416165080226023
+          },
+          {
+            "seed": 11,
+            "population_retained_delta": 0.0941276578135154,
+            "shortage_delta": -7.530212625081255,
+            "return_delta": 3.9943486874210237
+          },
+          {
+            "seed": 12,
+            "population_retained_delta": 0.02993791961508846,
+            "shortage_delta": -2.3950335692070794,
+            "return_delta": 7.749212344592166
+          },
+          {
+            "seed": 13,
+            "population_retained_delta": -0.2531778810461462,
+            "shortage_delta": 20.2542304836917,
+            "return_delta": -64.13601448294966
+          },
+          {
+            "seed": 14,
+            "population_retained_delta": 0.2479105965385704,
+            "shortage_delta": -19.832847723085653,
+            "return_delta": 24.809150076842855
+          },
+          {
+            "seed": 15,
+            "population_retained_delta": -0.12064363079828722,
+            "shortage_delta": 9.651490463862945,
+            "return_delta": -56.85514177862575
+          },
+          {
+            "seed": 16,
+            "population_retained_delta": 0.38130075386797113,
+            "shortage_delta": -30.504060309437676,
+            "return_delta": 11.14673670671661
+          },
+          {
+            "seed": 17,
+            "population_retained_delta": 0.07806895652218415,
+            "shortage_delta": -6.245516521774746,
+            "return_delta": -41.317836850401676
+          },
+          {
+            "seed": 18,
+            "population_retained_delta": 0.3237445546462262,
+            "shortage_delta": -25.899564371698087,
+            "return_delta": 41.73787891769999
+          },
+          {
+            "seed": 19,
+            "population_retained_delta": -0.1116568366139048,
+            "shortage_delta": 8.93254692911237,
+            "return_delta": -17.24771994869249
+          }
+        ]
+      },
+      {
+        "agent": "rules_all",
+        "mean_population_retained_delta": -0.009140678326204287,
+        "mean_shortage_delta": 0.7312542660963404,
+        "mean_return_delta": -29.92584997484302,
+        "wins": 11,
+        "losses": 9,
+        "ties": 0,
+        "pairs": [
+          {
+            "seed": 0,
+            "population_retained_delta": -0.2629619058803449,
+            "shortage_delta": 21.036952470427558,
+            "return_delta": -77.91951318463315
+          },
+          {
+            "seed": 1,
+            "population_retained_delta": 0.03028309006120561,
+            "shortage_delta": -2.4226472048964567,
+            "return_delta": -45.88166305453518
+          },
+          {
+            "seed": 2,
+            "population_retained_delta": 0.1849648579629002,
+            "shortage_delta": -14.797188637032008,
+            "return_delta": 1.6584749101947978
+          },
+          {
+            "seed": 3,
+            "population_retained_delta": -0.2822814216274864,
+            "shortage_delta": 22.582513730198905,
+            "return_delta": -95.3305875608373
+          },
+          {
+            "seed": 4,
+            "population_retained_delta": 0.16224801628715513,
+            "shortage_delta": -12.9798413029724,
+            "return_delta": -10.93156309121602
+          },
+          {
+            "seed": 5,
+            "population_retained_delta": -0.2255503940028069,
+            "shortage_delta": 18.04403152022455,
+            "return_delta": -103.75939260825587
+          },
+          {
+            "seed": 6,
+            "population_retained_delta": 0.05103660275576449,
+            "shortage_delta": -4.082928220461085,
+            "return_delta": -28.833286399886617
+          },
+          {
+            "seed": 7,
+            "population_retained_delta": -0.09197342375816606,
+            "shortage_delta": 7.357873900653296,
+            "return_delta": -58.39930392427004
+          },
+          {
+            "seed": 8,
+            "population_retained_delta": 0.04722161645971301,
+            "shortage_delta": -3.7777293167770516,
+            "return_delta": 6.013683521798782
+          },
+          {
+            "seed": 9,
+            "population_retained_delta": -0.27176593746164446,
+            "shortage_delta": 21.741274996931544,
+            "return_delta": -78.2794491729299
+          },
+          {
+            "seed": 10,
+            "population_retained_delta": -0.00010836585146872801,
+            "shortage_delta": 0.008669268117508011,
+            "return_delta": -0.7416165080226023
+          },
+          {
+            "seed": 11,
+            "population_retained_delta": 0.0941276578135154,
+            "shortage_delta": -7.530212625081255,
+            "return_delta": 3.9943486874210237
+          },
+          {
+            "seed": 12,
+            "population_retained_delta": 0.02993791961508846,
+            "shortage_delta": -2.3950335692070794,
+            "return_delta": 7.749212344592166
+          },
+          {
+            "seed": 13,
+            "population_retained_delta": -0.2531778810461462,
+            "shortage_delta": 20.2542304836917,
+            "return_delta": -64.13601448294966
+          },
+          {
+            "seed": 14,
+            "population_retained_delta": 0.2479105965385704,
+            "shortage_delta": -19.832847723085653,
+            "return_delta": 24.809150076842855
+          },
+          {
+            "seed": 15,
+            "population_retained_delta": -0.1465190129808578,
+            "shortage_delta": 11.721521038468584,
+            "return_delta": -58.32472701957741
+          },
+          {
+            "seed": 16,
+            "population_retained_delta": 0.21363774403641744,
+            "shortage_delta": -17.091019522913385,
+            "return_delta": -3.3770741492020875
+          },
+          {
+            "seed": 17,
+            "population_retained_delta": 0.07806895652218415,
+            "shortage_delta": -6.245516521774746,
+            "return_delta": -41.317836850401676
+          },
+          {
+            "seed": 18,
+            "population_retained_delta": 0.3237445546462262,
+            "shortage_delta": -25.899564371698087,
+            "return_delta": 41.73787891769999
+          },
+          {
+            "seed": 19,
+            "population_retained_delta": -0.1116568366139048,
+            "shortage_delta": 8.93254692911237,
+            "return_delta": -17.24771994869249
+          }
+        ]
+      }
+    ]
+  },
+  "verification": {
+    "new_tests": 7,
+    "full_suite_tests": 24,
+    "skipped": 0,
+    "status": "passed",
+    "red": "results/research_strategies_tdd/red.txt",
+    "green": "results/research_strategies_tdd/green.txt",
+    "report_red": "results/research_strategies_tdd/report_red.txt",
+    "full_suite": "results/research_strategies_tdd/full_suite.txt"
+  },
+  "source_sha256": {
+    "src/alive/baseline_agents.py": "2b13c558f64cf8fc5d4181775a37949f99e5c9158a5d1b73930f71125319314a",
+    "src/alive/evaluate.py": "ae005dd42d39c7a19d3e6b3c1568f9e98200f35ff2111a9ad64e5bf64446737b",
+    "tests/test_research_strategies.py": "ab27d569cba392666a866e60a8253da6d2f080185acc46de2130025791fbddd2"
+  },
+  "limitations": [
+    "20 stable world seeds; no independent holdout confirmation or significance test.",
+    "Compares whole rule strategies, not isolated node effects or RL learning.",
+    "Cooking has the highest sample mean retention but is only 0.82 percentage points above no research.",
+    "Hypothesis only partially supported: Fire-only underperforms all research on mean retention."
+  ],
+  "full_outputs": "results/research_strategies/ (100 complete runs; Git-ignored)"
+}

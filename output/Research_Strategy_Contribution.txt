@@ -1,0 +1,36 @@
+ALIVE research strategy contribution
+Author: Akshay Kumar <akshay.kumar01@sjsu.edu>
+Date: 28 October 2026
+
+This archive contains changed files and measured outputs for the existing
+ALIVE-level-1-foundation project. It is an overlay, not a standalone checkout.
+Source changes are in src/alive/baseline_agents.py and src/alive/evaluate.py.
+Feature tests are in tests/test_research_strategies.py.
+
+Four paths: none, fire, cooking (Fire then Cooking), all (default).
+No engine, reward, observation, training, or native-viewer changes.
+
+From the project root, with the virtual environment activated:
+python -m unittest discover -s tests -v
+python -m alive.evaluate --research-strategy fire --episodes 20 --output results/fire_only
+python -m alive.evaluate --compare-research-strategies --episodes 20 --seed-start 0 --output results/research_strategies
+
+TDD: seven feature tests failed before implementation, then passed.
+Full suite: 24 tests passed, zero skips. Red/green logs are included.
+Experiment: stable seeds 0-19, 100 episodes (four paths plus Random).
+Mean population retained: none 51.08%, fire 47.51%, cooking 51.90%, all 50.17%.
+The small Cooking advantage is descriptive; no significance, isolated
+technology causality, or RL-learning claim is made.
+
+Open docs/Research_Strategy_Design_Spec.docx for the template-based specification.
+Open results/research_strategies/report.html for the comparison report.
+Compact evidence is in docs/handbook/evidence/2026-10-28-research-strategies.json.
+Full runs are included because results/ is normally ignored by Git.
+
+Design spec revision 1.1: Appendix now includes the complete aggregate and
+paired comparison tables, metric definitions, reproduction settings, source
+references, a relative HTML report link, and validation limitations.
+
+Design spec revision 1.2 adds main-body data contracts, research-selection and
+paired-evaluation algorithms, and all seven concrete test cases mapped to
+requirements. Application code, tests and the measured results are unchanged.

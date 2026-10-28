@@ -78,6 +78,23 @@ Use `--technology-ablation` to add `rules_no_research`, the same yield-aware rul
 
 No remote publication is part of Level 1 completion. Existing proposals and presentation assets remain in the workspace.
 
+## Configurable research strategies
+
+`RuleAgent(research_strategy="none" | "fire" | "cooking" | "all")` restricts both
+new and resumed research. Cooking includes Fire; the engine's action mask still
+enforces prerequisites and affordability. The default `all` and legacy
+`research_enabled=False` retain their prior complete seed-42 traces. Combining
+the legacy false switch with `fire` or `cooking` raises a configuration error.
+
+`alive.evaluate --compare-research-strategies` compares the four paths and Random
+on matched world seeds. `--research-strategy` selects one path for the usual Rules
+reference. Configuration, CSV, summaries and full-run JSON include strategy
+metadata; Random/RL use null. Paired deltas against `rules_none` are saved in
+`research_comparison.json`. Differences describe the whole policy, including
+changed resource planning after its allowed research ends. They do not isolate
+the causal effect of one technology. No engine, reward, observation, checkpoint,
+training or viewer behavior is changed.
+
 ## Verification on October 5, 2026
 
 All nine tests passed with optional dependencies installed into a project-local temporary directory. A CPU PPO smoke run used two updates, two episodes per update, and two optimization epochs; training, checkpoint saving, and loading for evaluation succeeded.

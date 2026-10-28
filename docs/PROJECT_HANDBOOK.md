@@ -2,7 +2,7 @@
 
 Adaptive Life in Virtual Environments
 
-Version 0.9 · Reviewed 2026-10-15
+Version 0.10 · Reviewed 2026-10-28
 
 > Maintained snapshot. Implemented features, proposals, and open questions are distinct.
 
@@ -18,7 +18,7 @@ ALIVE is an extensible simulation sandbox for exploring how abstract communities
 
 - Current prototype: 1 community
 - Technology graph: 4 nodes
-- Latest verified tests: 17 passed
+- Latest verified tests: 24 passed
 - Main missing behavior: Knowledge exchange
 
 
@@ -192,7 +192,12 @@ The repaired rule policy proves that the stable environment permits survival and
 - Paired technology research ablation and per-seed deltas: docs/handbook/evidence/2026-10-16-technology-ablation.json
 
 
-### Latest verification
+### Research strategy comparison · stable seeds 0–19 · 2026-10-28
+
+Configurable none, fire, cooking (Fire then Cooking), and all research paths are implemented. A matched 20-seed comparison retains mean populations of 51.08%, 47.51%, 51.90%, and 50.17% respectively. Cooking is +0.82 percentage points versus no research, with higher variance; this does not establish superiority, isolated node causality, or RL learning. All 24 tests pass, including seven tests written before implementation. Evidence: docs/handbook/evidence/2026-10-28-research-strategies.json.
+
+
+### Earlier verification · 2026-10-16
 
 On 2026-10-16 the local suite passed 17 tests; two optional RL tests skipped because PyTorch/Gymnasium were not installed in the viewer environment. Tests cover the multi-technology seed-42 regression and verify that the ablation preserves paired seeds, writes configuration and every full trace, and performs no experiment action in the restricted condition. Existing reproducibility, hidden-information isolation, action legality, resource accounting, viewer equivalence, history, comparison, and export checks still pass. This verifies deterministic baseline/experiment behavior, not learned-policy quality.
 
@@ -597,7 +602,7 @@ Done when: Reproducible before/after evidence explains the original failure and 
 
 P1 · In progress · net ablation measured · Owner: Unassigned · experiment design review
 
-Next action: Use the 2026-10-16 mixed result to specify a node-level or scenario-controlled ablation. Predeclare the expected mechanism and metric before changing costs/effects.
+Next action: The 2026-10-28 research-path comparison is complete; Cooking has a small sample mean advantage. Next isolate mechanisms or confirm on disjoint seeds before changing costs/effects. T03 remains open for causal validation.
 
 Done when: Tests plus measurements identify a repeatable outcome difference attributable to a technology mechanic, not a hidden bonus or research-policy side effect.
 
@@ -872,6 +877,17 @@ Evaluation now supports a paired technology ablation with the same RuleAgent and
 Evidence: src/alive/evaluate.py; results/technology_value_stable/ (local, git-ignored); docs/handbook/evidence/2026-10-16-technology-ablation.json; 17 tests passed
 
 Next: Continue T03 with a predeclared node-level or scenario-controlled ablation; do not tune away the negative/mixed result.
+
+
+#### 2026-10-28 · Configurable research strategies delivered with TDD
+
+Status: Implemented and measured
+
+Added none, fire, cooking and all research strategies, single-strategy CLI selection and matched comparison mode. Seven new tests were observed failing before implementation; the full 24-test suite passes without skips. Stable seeds 0–19 produced 51.08%, 47.51%, 51.90%, and 50.17% mean retention. Default and legacy no-research complete seed-42 trace fingerprints are preserved. No engine or reward tuning. The template-based design spec records configuration, implementation, tests and limitations.
+
+Evidence: tests/test_research_strategies.py; docs/handbook/evidence/2026-10-28-research-strategies.json; docs/Research_Strategy_Design_Spec.docx
+
+Next: Review the contribution and confirm the small Cooking advantage on independent seeds before drawing a general conclusion.
 
 
 ### Entry template
